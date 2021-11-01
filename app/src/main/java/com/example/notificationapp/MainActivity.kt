@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
-            val channel : NotificationChannel = NotificationChannel("01", "Android Notification", NotificationManager.IMPORTANCE_DEFAULT)
+            val channel = NotificationChannel("01", "Android Notification", NotificationManager.IMPORTANCE_DEFAULT)
 
             nManager.createNotificationChannel(channel)
 
@@ -61,69 +61,72 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-
-
-}
-
-class NotificationReceiver : BroadcastReceiver() {
-    override fun onReceive(context: Context?, intent: Intent?) {
-        var temp = intent?.getStringExtra("command").equals("list")
-//        if (temp != null) {
-//            Log.d("Received Notification", temp.toString())
-//        }
-        if(intent!=null){
-            val bundle : Bundle? = intent.extras
-            if (bundle!=null) {
-                Log.d("Inten size",bundle.keySet().size.toString())
-                for(key in bundle.keySet()) {
-                    Log.d("Intent Properties",key+":"+(bundle.get(key).toString()))
-                }
-            }
-        }
-    }
-
-}
-
-class NotificationListener (
-    val TAG : String = "NotificationListener"
-) : NotificationListenerService() {
-
-    private lateinit var nlservicereceiver : NotificationListenerReceiver
-
-    override fun onCreate() {
-        super.onCreate()
-        nlservicereceiver = NotificationListenerReceiver()
-        var filter = IntentFilter()
-        filter.addAction("NOTIFICATION_LISTENER_SERVICE_EXAMPLE")
-        registerReceiver(nlservicereceiver, filter)
-    }
-
     override fun onDestroy() {
         super.onDestroy()
-        unregisterReceiver(nlservicereceiver)
+        unregisterReceiver(nReceiver)
     }
 
-    override fun onNotificationPosted(sbn: StatusBarNotification?) {
-        Log.i(TAG, "notificationPosted")
-        Log.i(TAG, "ID: "+ sbn?.id + "this")
+    fun getText() : String {
+        return "abc"
+//        return binding.textView.text.toString()
     }
 
-    override fun onListenerConnected() {
-        super.onListenerConnected()
-        Log.i(TAG, "on listener connected")
+    class NotificationReceiver : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            var temp = intent?.getStringExtra("notification_event") +"\n" + MainActivity().getText()
+            MainActivity().setText(temp)
+        }
+
     }
 
+    private fun setText(temp: String) {
+    }
 
 }
 
-class NotificationListenerReceiver : BroadcastReceiver() {
-    override fun onReceive(context: Context?, intent: Intent?) {
-        if(intent?.getStringExtra("command").equals("clearall")){
-            NotificationListener().cancelAllNotifications()
-        }
-        else if (intent?.getStringExtra("command").equals("list")){
 
-        }
-    }
 
-}
+//class NotificationListener (
+//    val TAG: String = "NotificationListener"
+//) : NotificationListenerService() {
+//
+//    private lateinit var nlservicereceiver : NotificationListenerReceiver
+//
+//    override fun onCreate() {
+//        super.onCreate()
+//        Log.d(TAG,"inside Oncreate")
+//        nlservicereceiver = NotificationListenerReceiver()
+//        var filter = IntentFilter()
+//        filter.addAction("NOTIFICATION_LISTENER_SERVICE_EXAMPLE")
+//        registerReceiver(nlservicereceiver, filter)
+//    }
+//
+//    override fun onDestroy() {
+//        super.onDestroy()
+//        unregisterReceiver(nlservicereceiver)
+//    }
+//
+//    override fun onNotificationPosted(sbn: StatusBarNotification?) {
+//        Log.i(TAG, "notificationPosted")
+//        Log.i(TAG, "ID: "+ sbn?.id + "this")
+//    }
+//
+//    override fun onListenerConnected() {
+//        super.onListenerConnected()
+//        Log.i(TAG, "on listener connected")
+//    }
+//
+//
+//}
+//
+//class NotificationListenerReceiver : BroadcastReceiver() {
+//    override fun onReceive(context: Context?, intent: Intent?) {
+//        if(intent?.getStringExtra("command").equals("clearall")){
+//            NotificationListener().cancelAllNotifications()
+//        }
+//        else if (intent?.getStringExtra("command").equals("list")){
+//
+//        }
+//    }
+//
+//}
