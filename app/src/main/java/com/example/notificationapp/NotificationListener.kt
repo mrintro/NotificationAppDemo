@@ -4,6 +4,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.nfc.Tag
+import android.os.Binder
+import android.os.IBinder
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
@@ -12,11 +15,36 @@ import android.util.Log
 val NOTIFICATION_PACKAGE = "com.example.notificationapp.NotificationListener"
 
 class NotificationListener(
-    val TAG: String = "Notification Listener"
+    private val TAG: String = "NotificationListener"
 ) : NotificationListenerService() {
 
 
     lateinit var nlReceiver: NotificationReceiver
+    val binder: IBinder = ServiceBinder()
+    private var isBound : Boolean = false
+
+
+
+    class ServiceBinder : Binder() {
+        fun getService() : NotificationListener {
+            return NotificationListener()
+        }
+    }
+
+    override fun onBind(intent: Intent?): IBinder? {
+        isBound = true
+        var action = intent?.action
+        Log.d(TAG,"onBind: "+action)
+        return if(SERVICE_INTERFACE.equals(action)){
+            Log.d(TAG, "Bound to System")
+            super.onBind(intent)
+        }else{
+            Log.d(TAG,"Bound by Application")
+            binder
+        }
+
+    }
+
 
     override fun onCreate() {
         super.onCreate()
@@ -51,6 +79,11 @@ class NotificationListener(
 
     class NotificationReceiver : BroadcastReceiver(){
         override fun onReceive(context: Context?, intent: Intent?) {
+            Log.i("BroadCastReceiver","Secondary")
+
+            if(intent==null){
+                Log.i("Debug","Intent NULL")
+            }
             if(intent?.getStringExtra("command").equals("clearall")){
                 NotificationListener().cancelAllNotifications()
             } else if(intent?.getStringExtra("command").equals("list")){

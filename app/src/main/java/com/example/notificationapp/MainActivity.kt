@@ -6,13 +6,10 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Binder
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.service.notification.NotificationListenerService
-import android.service.notification.StatusBarNotification
 import android.util.Log
-import android.widget.Button
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.example.notificationapp.databinding.ActivityMainBinding
@@ -22,6 +19,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var nReceiver: NotificationReceiver
     lateinit var binding : ActivityMainBinding
     private val NOTIFICATION_PACKAGE = "com.example.notificationapp.NotificationListener"
+
+
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +34,8 @@ class MainActivity : AppCompatActivity() {
         val intentFilter = IntentFilter()
         intentFilter.addAction(NOTIFICATION_PACKAGE)
         registerReceiver(nReceiver, intentFilter)
+
+        Log.i("Receiver Tag", "Receiver Created")
 
         binding.btnListNotify.setOnClickListener{
             val i: Intent = Intent(NOTIFICATION_PACKAGE).putExtra("command", "list")
@@ -58,6 +61,11 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+        binding.btnClearNotify.setOnClickListener{
+            val intent = Intent(NOTIFICATION_PACKAGE).putExtra("command","clearall")
+            sendBroadcast(intent)
+        }
+
 
     }
 
@@ -73,6 +81,7 @@ class MainActivity : AppCompatActivity() {
 
     class NotificationReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
+            Log.i("BroadCastReceive", "MainActivity")
             var temp = intent?.getStringExtra("notification_event") +"\n" + MainActivity().getText()
             MainActivity().setText(temp)
         }
@@ -84,49 +93,3 @@ class MainActivity : AppCompatActivity() {
 
 }
 
-
-
-//class NotificationListener (
-//    val TAG: String = "NotificationListener"
-//) : NotificationListenerService() {
-//
-//    private lateinit var nlservicereceiver : NotificationListenerReceiver
-//
-//    override fun onCreate() {
-//        super.onCreate()
-//        Log.d(TAG,"inside Oncreate")
-//        nlservicereceiver = NotificationListenerReceiver()
-//        var filter = IntentFilter()
-//        filter.addAction("NOTIFICATION_LISTENER_SERVICE_EXAMPLE")
-//        registerReceiver(nlservicereceiver, filter)
-//    }
-//
-//    override fun onDestroy() {
-//        super.onDestroy()
-//        unregisterReceiver(nlservicereceiver)
-//    }
-//
-//    override fun onNotificationPosted(sbn: StatusBarNotification?) {
-//        Log.i(TAG, "notificationPosted")
-//        Log.i(TAG, "ID: "+ sbn?.id + "this")
-//    }
-//
-//    override fun onListenerConnected() {
-//        super.onListenerConnected()
-//        Log.i(TAG, "on listener connected")
-//    }
-//
-//
-//}
-//
-//class NotificationListenerReceiver : BroadcastReceiver() {
-//    override fun onReceive(context: Context?, intent: Intent?) {
-//        if(intent?.getStringExtra("command").equals("clearall")){
-//            NotificationListener().cancelAllNotifications()
-//        }
-//        else if (intent?.getStringExtra("command").equals("list")){
-//
-//        }
-//    }
-//
-//}
