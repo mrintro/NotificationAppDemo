@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">NotificationApp</string>
     <string name="service_name">NotificationListenerService</string>
+    <string name="notification_listener_service">Notification Listener Service</string>
+    <string name="notification_listener_service_message">Notification Listener Service Enable</string>
+    <string name="allow">Allow</string>
+    <string name="deny">Deny</string>
 </resources>

@@ -20,26 +20,26 @@ class NotificationListener(
 
 
     lateinit var nlReceiver: NotificationReceiver
-    val binder: IBinder = ServiceBinder()
+    val binder: IBinder = LocalBinder()
     private var isBound : Boolean = false
 
 
 
-    class ServiceBinder : Binder() {
-        fun getService() : NotificationListener {
-            return NotificationListener()
-        }
+    inner class LocalBinder :Binder() {
+        fun getService() : NotificationListener = this@NotificationListener
     }
 
     override fun onBind(intent: Intent?): IBinder? {
         isBound = true
+        Log.i("Binder: ","onBind Called")
         var action = intent?.action
-        Log.d(TAG,"onBind: "+action)
-        return if(SERVICE_INTERFACE.equals(action)){
-            Log.d(TAG, "Bound to System")
+        Log.i("Binder", "onBind: $action")
+        Log.i("Binder OnService","$SERVICE_INTERFACE")
+        return if(SERVICE_INTERFACE == action){
+            Log.i(TAG, "Bound to System")
             super.onBind(intent)
         }else{
-            Log.d(TAG,"Bound by Application")
+            Log.i(TAG,"Bound by Application")
             binder
         }
 
